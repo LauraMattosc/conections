@@ -11,6 +11,7 @@ import networkx as nx
 from pyvis.network import Network
 import warnings
 
+
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 # Definir temas e cores
@@ -20,7 +21,6 @@ colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e3
 @st.cache_data()
 def create_fake_data(n):
     fake = Faker('pt_BR')
-    themes = ['Educação', 'Saúde', 'Meio Ambiente', 'Finanças', 'Tecnologia', 'Direito', 'Marketing', 'Logística']
     data = []
     for _ in range(n):
         name = fake.name()
@@ -59,8 +59,8 @@ for i, theme in enumerate(themes):
 for i, points in cluster_points.items():
     for j in range(len(fake_data)):
         if clusters[j] == i:
-            net.add_node(fake_data[j][0], label=fake_data[j][1], title=fake_data[j][2], color=colors[i])
-            net.add_edge(i, fake_data[j][0])
+            net.add_node(fake_data[j][0], label=fake_data[j][1], color=colors[i])
+            net.add_edge(i, len(themes) + j)
 
 # Exibir gráfico
 st.title("Rede de Conexões Recomendadas")
