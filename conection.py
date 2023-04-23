@@ -8,7 +8,7 @@ import plotly.graph_objs as go
 import networkx as nx
 import matplotlib.pyplot as plt
 from scipy.spatial import distance_matrix
-
+from streamlit_agraph import st_agraph
 
 # Gerar dados falsos
 fake = Faker('pt_BR')
@@ -46,6 +46,12 @@ def separate_points(reduced_data, clusters):
         cluster_points[cluster][1].append(point[1])
     return cluster_points
 
+# Obter recomendações de pessoas por similaridade temática
+def get_recommendations(person_index, data):
+    dist_matrix = distance_matrix(data, data)
+    similar_indices = dist_matrix[person_index].argsort()[1:6]
+    return similar_indices
+
 # Criar o aplicativo Streamlit
 st.title('Clusters de Pessoas por Temática')
 st.write('Este aplicativo gera dados falsos de pessoas com temas aleatórios e os agrupa em clusters usando k-means e os visualiza em um gráfico interativo.')
@@ -68,17 +74,6 @@ clusters = cluster_data(encoded_data)
 # Separar pontos por cluster
 cluster_points = separate_points(reduced_data, clusters)
 
-# Criar um gráfico interativo com plotly
-fig = go.Figure()
-
-colors = ['red', 'green', 'blue', 'cyan', 'magenta', 'yellow', 'black', 'purple']
-
-for i, points in cluster_points.items():
-    fig.add_trace(go.Scatter(x=points[0], y=points[1], mode='markers',
-                             marker=dict(color=colors[i], size=8),
-                             text=[f"{fake_data[j][0]}<br>{themes[i]}" for j in range(len(fake_data)) if clusters[j] == i],
-                             name=themes[i]))
-
 # Exibir o gráfico interativo
 st.plotly_chart(fig, use_container_width=True)
 
@@ -95,20 +90,48 @@ for i, person in enumerate(fake_data):
         edges.append((i, rec))
 
 # Criar o grafo de rede
-graph = st_agraph.graph(name='Recomendações de pessoas por similaridade temática')
+graph = nx.Graph(name='Recomendações de pessoas por similaridade temática')
 
 # Adicionar nós (pessoas) ao grafo de rede
 for node in nodes:
-    graph.add_node(name=str(node[0]), label=node[1]['label'], shape='circle', style='filled',
+    graph.add_node(node[0], label=node[1]['label'], shape='circle', style='filled',
                    fillcolor=colors[themes.index(node[1]['theme'])], fontcolor='white', fontsize=10)
 
 # Adicionar conexões ao grafo de rede
 for edge in edges:
-    graph.add_edge(str(edge[0]), str(edge[1]))
+    graph.add_edge(edge[0], edge[1])
 
 # Definir configurações do grafo de rede
-graph.node_attr.update(fontname='Helvetica', fontcolor='black')
-graph.edge_attr.update(color='gray', arrowsize=0.8)
+pos = nx.spring_layout(graph, seed=42)
+edge_x = []
+edge_y = []
+for edge in graph.edges():
+    x0, y0 = pos[edge[0]]
+    x1, y1 = pos[edge[1]]
+    edge_x.append(x0)
+    edge_x.append(x1)
+    edge_x.append(None)
+    edge_y.append(y0)
+    edge_y.append(y1)
+    edge_y.append(None)
+
+node_x = []
+node_y = []
+for node in graph.nodes():
+    x, y = pos[node]
+    node_x.append(x)
+    node_y.append(y)
+
+node_trace = go.Scatter(x=node_x, y=node_y, mode='markers', text=[node[1]['label'] for node in nodes],
+                        marker=dict(color=[colors[themes.index(node[1]['theme'])] for node in nodes], size=10))
+
+edge_trace = go.Scatter(x=edge_x, y=edge_y, mode='lines', line=dict(width=0.5, color='gray'), hoverinfo='none')
+
+fig = go.Figure(data=[edge_trace, node_trace],
+                layout=go.Layout(title='Recomendações de pessoas por similaridade temática', showlegend=False,
+                                 hovermode='closest', margin=dict(b=20, l=5, r=5, t=40),
+                                 xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                                 yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)))
 
 # Exibir grafo de rede
-st_agraph_chart(graph)
+st.plotly_chart(fig, use_container_width=True)
