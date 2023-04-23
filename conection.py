@@ -48,24 +48,12 @@ def separate_points(data, clusters):
         cluster_points[cluster][1].append(point[1])
     return cluster_points
 
-# Criar o aplicativo Streamlit
-st.title('Clusters de Pessoas por Temática')
-st.write('Este aplicativo gera dados falsos de pessoas com temas aleatórios e os agrupa em clusters usando k-means e os visualiza em um gráfico interativo.')
-
-# Definir o número de pontos de dados
-n_points = st.slider('Selecione o número de pontos de dados a serem gerados', min_value=100, max_value=200, step=100, value=100)
-
-# Gerar dados falsos
-fake_data = create_fake_data(n_points)
-
-# Codificar os dados categóricos
-encoded_data = encode_data(fake_data)
-
-# Agrupar dados
-clusters = cluster_data(encoded_data)
-
-# Reduzir a dimensionalidade dos dados para 2D usando t-SNE
-reduced_data = reduce_dimensionality(encoded_data)
+def get_recommendations(person_index, encoded_data):
+    dist_matrix = distance_matrix(encoded_data, encoded_data)
+    sorted_indices = np.argsort(dist_matrix[person_index])
+    similar_recommendations = sorted_indices[1:4]
+    different_recommendations = sorted_indices[-3:]
+    return np.concatenate((similar_recommendations, different_recommendations))
 
 # Separar pontos por cluster
 cluster_points = separate_points(reduced_data, clusters)
@@ -100,3 +88,8 @@ graph.edge_attr.update(color='gray', arrowsize=0.8)
 
 # Exibir grafo de rede
 st.graphviz_chart(graph)
+
+# Criar o aplicativo Streamlit
+st.title('Clusters de Pessoas por Temática')
+st.write('Este aplicativo gera dados falsos de pessoas com temas aleatórios e os agrupa em clusters usando k-means e os visualiza em um gráfico interativo.')
+
