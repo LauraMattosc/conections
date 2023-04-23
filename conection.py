@@ -80,7 +80,7 @@ def main():
     # Adicionar nós (pessoas) ao grafo de rede
     for i, person in enumerate(fake_data):
         graph.add_node(i, label=person[0], theme=person[1], shape='circle', style='filled',
-                   fillcolor=colors[themes.index(person[1])], fontcolor='white'),
+                   fillcolor=colors[themes.index(person[1])], fontcolor='white')
 
 
    # Adicionar nós (pessoas) ao grafo de rede
