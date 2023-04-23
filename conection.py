@@ -3,38 +3,29 @@ from faker import Faker
 import random
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.cluster import KMeans
+from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.manifold import TSNE
-import plotly.graph_objs as go
-import numpy as np
-from scipy.spatial import distance_matrix
-import networkx as nx
 from pyvis.network import Network
-import warnings
-from streamlit_pyvis import st_pyvis
-
-
-warnings.simplefilter(action='ignore', category=FutureWarning)
+import numpy as np
 
 # Definir temas e cores
 themes = ['Educação', 'Saúde', 'Meio Ambiente', 'Finanças', 'Tecnologia', 'Direito', 'Marketing', 'Logística']
 colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f']
 
-@st.cache_data()
 def create_fake_data(n):
     fake = Faker('pt_BR')
-    themes = ['Educação', 'Saúde', 'Meio Ambiente', 'Finanças', 'Tecnologia', 'Direito', 'Marketing', 'Logística']
     data = []
-    for _ in range(n):
+    for i in range(n):
         name = fake.name()
         theme = random.choice(themes)
-        data.append((name, theme))
+        data.append((i, name, theme))
     return data
 
 fake_data = create_fake_data(100)
 
 # Codificar dados categóricos
 encoder = OneHotEncoder()
-encoded_data = encoder.fit_transform(fake_data).toarray()
+encoded_data = encoder.fit_transform([(x[2],) for x in fake_data]).toarray()
 
 # Agrupar dados
 n_clusters = len(themes) # Um cluster para cada tema
@@ -61,9 +52,10 @@ for i, theme in enumerate(themes):
 for i, points in cluster_points.items():
     for j in range(len(fake_data)):
         if clusters[j] == i:
-            net.add_node(j+len(themes), label=fake_data[j][0], color=colors[i])
-            net.add_edge(i, j+len(themes))
-
+            net.add_node(fake_data[j][0], label=fake_data[j][1], title=fake_data[j][2], color=colors[i])
+            net.add_edge(i, fake_data[j][0])
+            
 # Exibir gráfico
 st.title("Rede de Conexões Recomendadas")
 st_pyvis(net)
+
