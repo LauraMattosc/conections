@@ -5,6 +5,8 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.cluster import KMeans
 from sklearn.manifold import TSNE
 import plotly.graph_objs as go
+import networkx as nx
+
 
 # Gerar dados falsos
 fake = Faker('pt_BR')
