@@ -8,6 +8,8 @@ import plotly.graph_objs as go
 import networkx as nx
 import matplotlib.pyplot as plt
 from scipy.spatial import distance_matrix
+import numpy as np
+
 
 
 # Gerar dados falsos
