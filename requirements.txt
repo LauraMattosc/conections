@@ -1,8 +1,8 @@
-streamlit
-faker
-scikit-learn
-plotly
-numpy
-networkx
-pyvis
-streamlit_pyvis
+Streamlit
+Faker
+Scikit-learn
+Plotly
+NumPy
+SciPy
+NetworkX
+Pyvis
