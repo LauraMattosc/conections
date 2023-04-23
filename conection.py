@@ -5,22 +5,13 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.cluster import KMeans
 from sklearn.manifold import TSNE
 import plotly.graph_objs as go
-import numpy as np
-from scipy.spatial import distance_matrix
-import networkx as nx
-from pyvis.network import Network
-import warnings
+import plotly.offline as pyo
 
-
-warnings.simplefilter(action='ignore', category=FutureWarning)
-
-# Definir temas e cores
+# Gerar dados falsos
+fake = Faker('pt_BR')
 themes = ['Educação', 'Saúde', 'Meio Ambiente', 'Finanças', 'Tecnologia', 'Direito', 'Marketing', 'Logística']
-colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f']
 
-@st.cache_data()
 def create_fake_data(n):
-    fake = Faker('pt_BR')
     data = []
     for _ in range(n):
         name = fake.name()
@@ -28,41 +19,48 @@ def create_fake_data(n):
         data.append((name, theme))
     return data
 
-fake_data = create_fake_data(100)
+def encode_data(data):
+    encoder = OneHotEncoder()
+    encoded_data = encoder.fit_transform(data).toarray()
+    return encoded_data
 
-# Codificar dados categóricos
-encoder = OneHotEncoder()
-encoded_data = encoder.fit_transform(fake_data).toarray()
+def cluster_data(data):
+    n_clusters = len(themes)
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+    clusters = kmeans.fit_predict(data)
+    return clusters
+
+def reduce_dimensionality(data):
+    tsne = TSNE(n_components=2, random_state=42)
+    reduced_data = tsne.fit_transform(data)
+    return reduced_data
+
+def separate_points(data, clusters):
+    cluster_points = {i: ([], []) for i in range(len(themes))}
+    for i, point in enumerate(data):
+        cluster = clusters[i]
+        cluster_points[cluster][0].append(point[0])
+        cluster_points[cluster][1].append(point[1])
+    return cluster_points
+
+# Criar o aplicativo Streamlit
+st.title('Clusters de Pessoas por Temática')
+st.write('Este aplicativo gera dados falsos de pessoas com temas aleatórios e os agrupa em clusters usando k-means e os visualiza em um gráfico interativo.')
+
+# Definir o número de pontos de dados
+n_points = st.slider('Selecione o número de pontos de dados a serem gerados', min_value=100, max_value=10000, step=100, value=100)
+
+# Gerar dados falsos
+fake_data = create_fake_data(n_points)
+
+# Codificar os dados categóricos
+encoded_data = encode_data(fake_data)
 
 # Agrupar dados
-n_clusters = len(themes) # Um cluster para cada tema
-kmeans = KMeans(n_clusters=n_clusters, n_init=10, random_state=42)
-clusters = kmeans.fit_predict(encoded_data)
+clusters = cluster_data(encoded_data)
 
-# Reduzir a dimensionalidade para 2D usando t-SNE
-tsne = TSNE(n_components=2, random_state=42)
-reduced_data = tsne.fit_transform(encoded_data)
+# Reduzir a dimensionalidade dos dados para 2D usando t-SNE
+reduced_data = reduce_dimensionality(encoded_data)
 
 # Separar pontos por cluster
-cluster_points = {i: ([], []) for i in range(n_clusters)}
-for i, point in enumerate(reduced_data):
-    cluster = clusters[i]
-    cluster_points[cluster][0].append(point[0])
-    cluster_points[cluster][1].append(point[1])
-
-# Criar um gráfico interativo com pyvis
-net = Network(height='600px', width='100%', bgcolor='#222222', font_color='white', directed=False)
-net.barnes_hut()
-for i, theme in enumerate(themes):
-    net.add_node(i, label=theme, color=colors[i])
-
-for i, points in cluster_points.items():
-    for j in range(len(fake_data)):
-        if clusters[j] == i:
-            net.add_node(j+len(themes), label=fake_data[j][0], color=colors[i])
-            net.add_edge(i, j+len(themes)+1)
-
-
-# Exibir gráfico
-st.title("Rede de Conexões Recomendadas")
-net.show("network.html")
+cluster_points = separate_points(reduced_data,
