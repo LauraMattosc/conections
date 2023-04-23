@@ -10,6 +10,8 @@ from scipy.spatial import distance_matrix
 import networkx as nx
 from pyvis.network import Network
 import warnings
+from streamlit_pyvis import st_pyvis
+
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
