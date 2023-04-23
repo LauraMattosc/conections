@@ -6,6 +6,8 @@ from sklearn.cluster import KMeans
 from sklearn.manifold import TSNE
 import plotly.graph_objs as go
 import networkx as nx
+import matplotlib.pyplot as plt
+from scipy.spatial import distance_matrix
 
 
 # Gerar dados falsos
