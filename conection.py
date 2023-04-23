@@ -62,15 +62,6 @@ for i, points in cluster_points.items():
             net.add_node(j+len(themes), label=fake_data[j][0], color=colors[i])
             net.add_edge(i, j+len(themes))
 
-# Criar filtro
-theme_filter = st.sidebar.selectbox("Filtrar por tema", themes)
-filtered_nodes = [i+len(themes) for i in range(len(fake_data)) if fake_data[i][1] == theme_filter]
-if len(filtered_nodes) > 0:
-    net.set_options('{{"{theme_filter}": {{color: "#00ff00"}}, highlightNearest: {{degree: 1, hover: false, algorithm: "all", distance: {{max: 100}}}}}}'.format(theme_filter=theme_filter))
-
-else:
-    net.set_options("{highlightNearest: {degree: 1, hover: false, algorithm: \"all\", distance: {max: undefined}}}")
-
 # Exibir gráfico
 st.title("Rede de Conexões Recomendadas")
 st_pyvis(net)
