@@ -8,7 +8,7 @@ import plotly.graph_objs as go
 import numpy as np
 from scipy.spatial import distance_matrix
 import networkx as nx
-import matplotlib.pyplot as plt
+from pyvis.network import Network
 
 # Gerar dados falsos
 fake = Faker('pt_BR')
@@ -44,49 +44,28 @@ for i, point in enumerate(reduced_data):
     cluster_points[cluster][0].append(point[0])
     cluster_points[cluster][1].append(point[1])
 
-# Criar um gráfico interativo com plotly
-fig = go.Figure()
-
-colors = ['red', 'green', 'blue', 'cyan', 'magenta', 'yellow', 'black', 'purple']
+# Criar um gráfico interativo com pyvis
+net = Network(height='600px', width='100%', bgcolor='#222222', font_color='white', directed=False)
+net.barnes_hut()
+for i, theme in enumerate(themes):
+    net.add_node(i, label=theme, color=colors[i])
 
 for i, points in cluster_points.items():
-    fig.add_trace(go.Scatter(x=points[0], y=points[1], mode='markers',
-                             marker=dict(color=colors[i], size=8),
-                             text=[f"{fake_data[j][0]}<br>{themes[i]}" for j in range(len(fake_data)) if clusters[j] == i],
-                             name=themes[i]))
+    for j in range(len(fake_data)):
+        if clusters[j] == i:
+            net.add_node(j+len(themes), label=fake_data[j][0], color=colors[i])
+            net.add_edge(i, j+len(themes))
 
-fig.update_layout(title='Clusters de Pessoas por Temática', hovermode='closest')
-
-st.title("Clusters de Pessoas por Temática")
-st.plotly_chart(fig)
-
-def get_recommendations(person_index, encoded_data):
-    dist_matrix = distance_matrix(encoded_data, encoded_data)
-    sorted_indices = np.argsort(dist_matrix[person_index])
-    similar_recommendations = sorted_indices[1:4]
-    different_recommendations = sorted_indices[-3:]
-    return np.concatenate((similar_recommendations, different_recommendations))
-
-# Criar um grafo vazio
-G = nx.Graph()
-
-# Adicionar nós (pessoas) ao grafo
-for i, person in enumerate(fake_data):
-    G.add_node(i, label=person[0], theme=person[1])
-
-# Adicionar arestas (conexões) ao grafo
-for i, person in enumerate(fake_data):
-    recommendations = get_recommendations(i, encoded_data)
-    for rec in recommendations:
-        G.add_edge(i, rec)
-
-# Desenhar o grafo de rede
-plt.figure(figsize=(12, 12))
-pos = nx.spring_layout(G, seed=42, iterations=50)
-nx.draw(G, pos, node_color=[colors[themes.index(G.nodes[node]["theme"])] for node in G], with_labels=False)
-nx.draw_networkx_labels(G, pos, labels={node: G.nodes[node]["label"] for node in G}, font_size=8)
+# Criar filtros
+theme_filter = st.sidebar.selectbox("Filtrar por tema", themes)
+filtered_nodes = [i+len(themes) for i in range(len(fake_data)) if fake_data[i][1] == theme_filter]
+if len(filtered_nodes) > 0:
+    net.set_options(f"{theme_filter} = true;")
+    net.toggle_physics(False)
+    net.highlight_nodes(filtered_nodes)
+else:
+    net.toggle_physics(True)
 
 # Exibir gráfico
 st.title("Rede de Conexões Recomendadas")
-st.pyplot(plt.gcf())
-       
+st_pyvis(net)    
