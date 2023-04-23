@@ -54,18 +54,21 @@ for i in range(len(fake_data)):
         if clusters[i] == clusters[j]:
             G.add_edge(i, j)
 
-# Criar um grafo interativo com pyvis
-net = Network(height='600px', width='100%', bgcolor='#222222', font_color='white', directed=False, notebook=False)
+# Criar um gráfico interativo com pyvis
+net = Network(height='600px', width='100%', bgcolor='#222222', font_color='white', directed=False)
+net.barnes_hut()
+for i, theme in enumerate(themes):
+    net.add_node(i, label=theme, color=colors[i])
 
-# Adicionar nós e arestas ao grafo
-for node in G.nodes:
-    net.add_node(node, label=f"{G.nodes[node]['name']} ({G.nodes[node]['job']})", title=G.nodes[node]['theme'], color=colors[G.nodes[node]['cluster']])
-for edge in G.edges:
-    net.add_edge(edge[0], edge[1])
+for i, points in cluster_points.items():
+    for j in range(len(fake_data)):
+        if clusters[j] == i:
+            net.add_node(fake_data[j][0], label=fake_data[j][1], title=fake_data[j][2], color=colors[i])
+            net.add_edge(i, fake_data[j][0])
+            
+# Escrever HTML em um arquivo
+net.write_html("network.html")
 
-# Exibir grafo
+# Exibir gráfico
 st.title("Rede de Conexões Recomendadas")
-net.show("network.html")
-HtmlFile = open("network.html", 'r', encoding='utf-8')
-source_code = HtmlFile.read()
-components.html(source_code, height=600) 
+st.components.v1.iframe("network.html", height=700)
