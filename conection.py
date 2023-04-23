@@ -60,7 +60,8 @@ for i, points in cluster_points.items():
     for j in range(len(fake_data)):
         if clusters[j] == i:
             net.add_node(j+len(themes), label=fake_data[j][0], color=colors[i])
-            net.add_edge(i, j+len(themes))
+            net.add_edge(i, j+len(themes)+1)
+
 
 # Exibir gráfico
 st.title("Rede de Conexões Recomendadas")
