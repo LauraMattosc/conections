@@ -127,5 +127,6 @@ fig = go.Figure(data=[edge_trace, node_trace],
                                  xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
                                  yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)))
 
+
 # Exibir grafo de rede
 st.plotly_chart(fig, use_container_width=True)
