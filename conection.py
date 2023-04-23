@@ -8,7 +8,6 @@ import plotly.graph_objs as go
 import networkx as nx
 import matplotlib.pyplot as plt
 from scipy.spatial import distance_matrix
-from streamlit_agraph import st_agraph
 
 # Gerar dados falsos
 fake = Faker('pt_BR')
