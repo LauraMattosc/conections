@@ -77,6 +77,11 @@ cluster_points = separate_points(reduced_data, clusters)
 # Exibir o gráfico interativo
 st.plotly_chart(fig, use_container_width=True)
 
+
+
+
+
+
 # Criar nós (pessoas) do gráfico de rede
 nodes = []
 for i, person in enumerate(fake_data):
@@ -94,7 +99,7 @@ graph = nx.Graph(name='Recomendações de pessoas por similaridade temática')
 
 # Adicionar nós (pessoas) ao grafo de rede
 for node in nodes:
-    graph.add_node(node[0], label=node[1]['label'], shape='circle', style='filled',
+    graph.add_node(node[0], label=node[1]['label'], theme=node[1]['theme'], shape='circle', style='filled',
                    fillcolor=colors[themes.index(node[1]['theme'])], fontcolor='white', fontsize=10)
 
 # Adicionar conexões ao grafo de rede
