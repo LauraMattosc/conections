@@ -4,6 +4,4 @@ scikit-learn
 plotly
 numpy
 networkx
-scipy
 pyvis
-streamlit_pyvis
