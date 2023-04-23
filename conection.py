@@ -62,12 +62,14 @@ for i, points in cluster_points.items():
 # Criar filtros
 theme_filter = st.sidebar.selectbox("Filtrar por tema", themes)
 filtered_nodes = [i+len(themes) for i in range(len(fake_data)) if fake_data[i][1] == theme_filter]
-if len(filtered_nodes) > 0:
-    net.set_options(f"{theme_filter} = true;")
+options = {f"{theme}_filter": True for theme in themes}
+if theme_filter:
+    options[f"{theme_filter}_filter"] = True
     net.toggle_physics(False)
     net.highlight_nodes(filtered_nodes)
 else:
     net.toggle_physics(True)
+net.set_options(options)
 
 # Exibir gráfico
 st.title("Rede de Conexões Recomendadas")
