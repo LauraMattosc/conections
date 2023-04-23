@@ -9,6 +9,9 @@ import numpy as np
 from scipy.spatial import distance_matrix
 import networkx as nx
 from pyvis.network import Network
+import warnings
+
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 # Gerar dados falsos
 fake = Faker('pt_BR')
