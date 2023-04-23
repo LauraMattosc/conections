@@ -1,8 +1,9 @@
 streamlit
 faker
-numpy
 scikit-learn
 plotly
-matplotlib
-scipy
+numpy
 networkx
+scipy
+pyvis
+streamlit_pyvis
