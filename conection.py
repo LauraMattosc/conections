@@ -69,7 +69,8 @@ options = {f"{theme}_filter": True for theme in themes}
 if theme_filter:
     options[f"{theme_filter}_filter"] = True
     net.toggle_physics(False)
-    net.highlight_nodes(filtered_nodes)
+    net.select_nodes(filtered_nodes)
+
 else:
     net.toggle_physics(True)
 net.set_options(options)
