@@ -73,6 +73,12 @@ clusters = cluster_data(encoded_data)
 # Separar pontos por cluster
 cluster_points = separate_points(reduced_data, clusters)
 
+fig = go.Figure(data=[edge_trace, node_trace],
+                layout=go.Layout(title='Recomendações de pessoas por similaridade temática', showlegend=False,
+                                 hovermode='closest', margin=dict(b=20, l=5, r=5, t=40),
+                                 xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                                 yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)))
+
 # Exibir o gráfico interativo
 st.plotly_chart(fig, use_container_width=True)
 
@@ -120,12 +126,6 @@ node_trace = go.Scatter(x=node_x, y=node_y, mode='markers', text=[person[0] for 
                         marker=dict(color=[colors[themes.index(person[1])] for person in fake_data], size=10))
 
 edge_trace = go.Scatter(x=edge_x, y=edge_y, mode='lines', line=dict(width=0.5, color='gray'), hoverinfo='none')
-
-fig = go.Figure(data=[edge_trace, node_trace],
-                layout=go.Layout(title='Recomendações de pessoas por similaridade temática', showlegend=False,
-                                 hovermode='closest', margin=dict(b=20, l=5, r=5, t=40),
-                                 xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-                                 yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)))
 
 
 # Exibir grafo de rede
