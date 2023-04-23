@@ -5,4 +5,4 @@ plotly
 numpy
 networkx
 pyvis
-
+streamlit_pyvis
