@@ -13,11 +13,13 @@ import warnings
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-# Gerar dados falsos
+# Definir temas e cores
+themes = ['Educação', 'Saúde', 'Meio Ambiente', 'Finanças', 'Tecnologia', 'Direito', 'Marketing', 'Logística']
+colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f']
+
 @st.cache
-def create_fake_data(n):
+def create_fake_data(n, themes):
     fake = Faker('pt_BR')
-    themes = ['Educação', 'Saúde', 'Meio Ambiente', 'Finanças', 'Tecnologia', 'Direito', 'Marketing', 'Logística']
     data = []
     for _ in range(n):
         name = fake.name()
@@ -25,7 +27,7 @@ def create_fake_data(n):
         data.append((name, theme))
     return data
 
-fake_data = create_fake_data(100)
+fake_data = create_fake_data(100, themes)
 
 # Codificar dados categóricos
 encoder = OneHotEncoder()
