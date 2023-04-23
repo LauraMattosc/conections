@@ -106,7 +106,7 @@ for i, person in enumerate(fake_data):
 
 # Desenhar o grafo de rede
 fig, ax = plt.subplots(figsize=(12, 12))
-pos = nx.spring_layout(G, seed=42, iterations=50, cooling=0.95)
+pos = nx.spring_layout(G, seed=42, iterations=50)
 nx.draw(G, pos, node_color=[colors[themes.index(G.nodes[node]["theme"])] for node in G], with_labels=False, ax=ax)
 nx.draw_networkx_labels(G, pos, labels={node: G.nodes[node]["label"] for node in G}, font_size=8, ax=ax)
 
