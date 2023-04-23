@@ -30,7 +30,7 @@ encoded_data = encoder.fit_transform(fake_data).toarray()
 
 # Agrupar dados
 n_clusters = len(themes) # Um cluster para cada tema
-kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+kmeans = KMeans(n_clusters=n_clusters, n_init=10, random_state=42)
 clusters = kmeans.fit_predict(encoded_data)
 
 # Reduzir a dimensionalidade para 2D usando t-SNE
