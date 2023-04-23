@@ -6,3 +6,4 @@ NumPy
 SciPy
 NetworkX
 Pyvis
+streamlit_agraph
