@@ -78,3 +78,25 @@ for i, points in cluster_points.items():
 
 # Exibir o gráfico interativo
 st.plotly_chart(fig, use_container_width=True)
+
+# Criar um grafo vazio
+G = nx.Graph()
+
+# Adicionar nós (pessoas) ao grafo
+for i, person in enumerate(fake_data):
+    G.add_node(i, label=person[0], theme=person[1])
+
+# Adicionar arestas (conexões) ao grafo
+for i, person in enumerate(fake_data):
+    recommendations = get_recommendations(i, encoded_data)
+    for rec in recommendations:
+        G.add_edge(i, rec)
+
+# Desenhar o grafo de rede
+fig, ax = plt.subplots(figsize=(12, 12))
+pos = nx.spring_layout(G, seed=42, iterations=50, cooling=0.95)
+nx.draw(G, pos, node_color=[colors[themes.index(G.nodes[node]["theme"])] for node in G], with_labels=False, ax=ax)
+nx.draw_networkx_labels(G, pos, labels={node: G.nodes[node]["label"] for node in G}, font_size=8, ax=ax)
+
+# Exibir gráfico
+st.pyplot(fig)
