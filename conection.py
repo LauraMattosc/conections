@@ -80,6 +80,13 @@ for i, points in cluster_points.items():
 # Exibir o gráfico interativo
 st.plotly_chart(fig, use_container_width=True)
 
+def get_recommendations(person_index, encoded_data):
+    dist_matrix = distance_matrix(encoded_data, encoded_data)
+    sorted_indices = np.argsort(dist_matrix[person_index])
+    similar_recommendations = sorted_indices[1:4]
+    different_recommendations = sorted_indices[-3:]
+    return np.concatenate((similar_recommendations, different_recommendations))
+
 # Criar um grafo vazio
 G = nx.Graph()
 
