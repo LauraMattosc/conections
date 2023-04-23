@@ -14,6 +14,9 @@ from pyvis.network import Network
 fake = Faker('pt_BR')
 themes = ['Educação', 'Saúde', 'Meio Ambiente', 'Finanças', 'Tecnologia', 'Direito', 'Marketing', 'Logística']
 
+# Definir as cores para os temas
+colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f']
+
 def create_fake_data(n):
     data = []
     for _ in range(n):
@@ -68,4 +71,7 @@ else:
 
 # Exibir gráfico
 st.title("Rede de Conexões Recomendadas")
-st_pyvis(net)    
+viz = net.show("viz.html")
+with open("viz.html", "r") as f:
+    HtmlFile = f.read()
+st.components.v1.html
