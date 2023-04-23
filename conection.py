@@ -82,29 +82,19 @@ st.plotly_chart(fig, use_container_width=True)
 
 
 
-# Criar nós (pessoas) do gráfico de rede
-nodes = []
-for i, person in enumerate(fake_data):
-    nodes.append((i, {'label': person[0], 'theme': person[1]}))
-
-# Criar conexões do gráfico de rede
-edges = []
-for i, person in enumerate(fake_data):
-    recommendations = get_recommendations(i, encoded_data)
-    for rec in recommendations:
-        edges.append((i, rec))
-
 # Criar o grafo de rede
 graph = nx.Graph(name='Recomendações de pessoas por similaridade temática')
 
 # Adicionar nós (pessoas) ao grafo de rede
-for node in nodes:
-    graph.add_node(node[0], label=node[1]['label'], theme=node[1]['theme'], shape='circle', style='filled',
-                   fillcolor=colors[themes.index(node[1]['theme'])], fontcolor='white', fontsize=10)
+for i, person in enumerate(fake_data):
+    graph.add_node(i, label=person[0], theme=person[1], shape='circle', style='filled',
+                   fillcolor=colors[themes.index(person[1])], fontcolor='white', fontsize=10)
 
 # Adicionar conexões ao grafo de rede
-for edge in edges:
-    graph.add_edge(edge[0], edge[1])
+for i, person in enumerate(fake_data):
+    recommendations = get_recommendations(i, encoded_data)
+    for rec in recommendations:
+        graph.add_edge(i, rec)
 
 # Definir configurações do grafo de rede
 pos = nx.spring_layout(graph, seed=42)
@@ -127,8 +117,8 @@ for node in graph.nodes():
     node_x.append(x)
     node_y.append(y)
 
-node_trace = go.Scatter(x=node_x, y=node_y, mode='markers', text=[node[1]['label'] for node in nodes],
-                        marker=dict(color=[colors[themes.index(node[1]['theme'])] for node in nodes], size=10))
+node_trace = go.Scatter(x=node_x, y=node_y, mode='markers', text=[person[0] for person in fake_data],
+                        marker=dict(color=[colors[themes.index(person[1])] for person in fake_data], size=10))
 
 edge_trace = go.Scatter(x=edge_x, y=edge_y, mode='lines', line=dict(width=0.5, color='gray'), hoverinfo='none')
 
