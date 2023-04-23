@@ -62,7 +62,7 @@ for i, points in cluster_points.items():
             net.add_node(j+len(themes), label=fake_data[j][0], color=colors[i])
             net.add_edge(i, j+len(themes))
 
-# Criar filtros
+# Criar filtro
 theme_filter = st.sidebar.selectbox("Filtrar por tema", themes)
 filtered_nodes = [i+len(themes) for i in range(len(fake_data)) if fake_data[i][1] == theme_filter]
 if len(filtered_nodes) > 0:
