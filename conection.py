@@ -63,4 +63,18 @@ clusters = cluster_data(encoded_data)
 reduced_data = reduce_dimensionality(encoded_data)
 
 # Separar pontos por cluster
-cluster_points = separate_points(reduced_data,
+cluster_points = separate_points(reduced_data, clusters)
+
+# Criar um gráfico interativo com plotly
+fig = go.Figure()
+
+colors = ['red', 'green', 'blue', 'cyan', 'magenta', 'yellow', 'black', 'purple']
+
+for i, points in cluster_points.items():
+    fig.add_trace(go.Scatter(x=points[0], y=points[1], mode='markers',
+                             marker=dict(color=colors[i], size=8),
+                             text=[f"{fake_data[j][0]}<br>{themes[i]}" for j in range(len(fake_data)) if clusters[j] == i],
+                             name=themes[i]))
+
+# Exibir o gráfico interativo
+st.plotly_chart(fig, use_container_width=True)
