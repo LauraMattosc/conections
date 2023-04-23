@@ -52,45 +52,37 @@ def get_recommendations(person_index, data):
     return similar_indices
 
 # Criar o aplicativo Streamlit
-st.title('Clusters de Pessoas por Temática')
-st.write('Este aplicativo gera dados falsos de pessoas com temas aleatórios e os agrupa em clusters usando k-means e os visualiza em um gráfico interativo.')
+def main():
+    st.title('Recomendações de Pessoas e Conexões')
+    st.write('Este aplicativo gera dados falsos de pessoas com temas aleatórios e usa IA para recomendar as 3 pessoas mais parecidas e as 3 conexões com mais potencial.')
+    
+    # Definir o número de pontos de dados
+    n_points = st.slider('Selecione o número de pontos de dados a serem gerados', min_value=100, max_value=700, step=100, value=100)
 
-# Definir o número de pontos de dados
-n_points = st.slider('Selecione o número de pontos de dados a serem gerados', min_value=100, max_value=700, step=100, value=100)
+    # Gerar dados falsos
+    fake_data = create_fake_data(n_points)
 
-# Gerar dados falsos
-fake_data = create_fake_data(n_points)
+    # Codificar os dados categóricos
+    encoded_data = encode_data(fake_data)
 
-# Codificar os dados categóricos
-encoded_data = encode_data(fake_data)
+    # Reduzir a dimensionalidade dos dados para 2D usando t-SNE
+    reduced_data = reduce_dimensionality(encoded_data)
 
-# Reduzir a dimensionalidade dos dados para 2D usando t-SNE
-reduced_data = reduce_dimensionality(encoded_data)
+    # Agrupar dados
+    clusters = cluster_data(encoded_data)
 
-# Agrupar dados
-clusters = cluster_data(encoded_data)
+    # Separar pontos por cluster
+    cluster_points = separate_points(reduced_data, clusters)
 
-# Separar pontos por cluster
-cluster_points = separate_points(reduced_data, clusters)
+    # Criar o grafo de rede
+    graph = nx.Graph(name='Recomendações de pessoas por similaridade temática')
 
-fig = go.Figure(data=[edge_trace, node_trace],
-                layout=go.Layout(title='Recomendações de pessoas por similaridade temática', showlegend=False,
-                                 hovermode='closest', margin=dict(b=20, l=5, r=5, t=40),
-                                 xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-                                 yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)))
+    # Adicionar nós (pessoas) ao grafo de rede
+    for i, person in enumerate(fake_data):
+        graph.add_node(i, label=person[0], theme=person[1], shape='circle', style='filled',
+                       fillcolor=colors[themes
 
-# Exibir o gráfico interativo
-st.plotly_chart(fig, use_container_width=True)
-
-
-
-
-
-
-# Criar o grafo de rede
-graph = nx.Graph(name='Recomendações de pessoas por similaridade temática')
-
-# Adicionar nós (pessoas) ao grafo de rede
+   # Adicionar nós (pessoas) ao grafo de rede
 for i, person in enumerate(fake_data):
     graph.add_node(i, label=person[0], theme=person[1], shape='circle', style='filled',
                    fillcolor=colors[themes.index(person[1])], fontcolor='white', fontsize=10)
@@ -127,6 +119,35 @@ node_trace = go.Scatter(x=node_x, y=node_y, mode='markers', text=[person[0] for 
 
 edge_trace = go.Scatter(x=edge_x, y=edge_y, mode='lines', line=dict(width=0.5, color='gray'), hoverinfo='none')
 
+fig = go.Figure(data=[edge_trace, node_trace],
+                layout=go.Layout(title='Recomendações de pessoas por similaridade temática', showlegend=False,
+                                 hovermode='closest', margin=dict(b=20, l=5, r=5, t=40),
+                                 xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                                 yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)))
 
 # Exibir grafo de rede
 st.plotly_chart(fig, use_container_width=True)
+
+# Obter as 3 pessoas mais parecidas com a primeira pessoa do conjunto de dados
+recommendations = get_recommendations(0, encoded_data)[:3]
+
+st.subheader('Pessoas mais parecidas')
+for rec in recommendations:
+    st.write(fake_data[rec][0])
+
+# Obter as 3 conexões com mais potencial
+potential_connections = []
+for i, person in enumerate(fake_data):
+    if i not in recommendations:
+        for rec in recommendations:
+            if rec in get_recommendations(i, encoded_data):
+                potential_connections.append((i, rec))
+
+sorted_potential_connections = sorted(potential_connections, key=lambda x: x[1], reverse=True)[:3]
+
+st.subheader('Conexões com mais potencial')
+for connection in sorted_potential_connections:
+    st.write(fake_data[connection[0]][0], 'e', fake_data[connection[1]][0])
+                                     
+                                      
+                                        
