@@ -65,19 +65,11 @@ for i, points in cluster_points.items():
 # Criar filtros
 theme_filter = st.sidebar.selectbox("Filtrar por tema", themes)
 filtered_nodes = [i+len(themes) for i in range(len(fake_data)) if fake_data[i][1] == theme_filter]
-options = {f"{theme}_filter": True for theme in themes}
-if theme_filter:
-    options[f"{theme_filter}_filter"] = True
-    net.toggle_physics(False)
-    net.select_nodes(filtered_nodes)
-
+if len(filtered_nodes) > 0:
+    net.set_options(f"""{{"{theme_filter}": {{color: "#00ff00"}}, highlightNearest: {{degree: 1, hover: false, algorithm: "all", distance: {{max: 100}}}}}}""")
 else:
-    net.toggle_physics(True)
-net.set_options(options)
+    net.set_options("{highlightNearest: {degree: 1, hover: false, algorithm: \"all\", distance: {max: undefined}}}")
 
 # Exibir gráfico
 st.title("Rede de Conexões Recomendadas")
-viz = net.show("viz.html")
-with open("viz.html", "r") as f:
-    HtmlFile = f.read()
-st.components.v1.html
+st_pyvis(net)
