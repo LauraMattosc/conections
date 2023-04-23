@@ -53,7 +53,7 @@ st.title('Clusters de Pessoas por Temática')
 st.write('Este aplicativo gera dados falsos de pessoas com temas aleatórios e os agrupa em clusters usando k-means e os visualiza em um gráfico interativo.')
 
 # Definir o número de pontos de dados
-n_points = st.slider('Selecione o número de pontos de dados a serem gerados', min_value=100, max_value=700, step=100, value=100)
+n_points = st.slider('Selecione o número de pontos de dados a serem gerados', min_value=100, max_value=100, step=100, value=100)
 
 # Gerar dados falsos
 fake_data = create_fake_data(n_points)
